@@ -19,7 +19,7 @@ var (
 
 // Cache returns the existing cache table with given name or creates a new one
 // if the table does not exist yet.
-func Cache(table string) *CacheTable {
+func Cache(table string, isExpCreated bool) *CacheTable {
 	mutex.RLock()
 	t, ok := cache[table]
 	mutex.RUnlock()
@@ -30,8 +30,9 @@ func Cache(table string) *CacheTable {
 		// Double check whether the table exists or not.
 		if !ok {
 			t = &CacheTable{
-				name:  table,
-				items: make(map[interface{}]*CacheItem),
+				name:             table,
+				isExpCreatedTime: isExpCreated,
+				items:            make(map[interface{}]*CacheItem),
 			}
 			cache[table] = t
 		}
