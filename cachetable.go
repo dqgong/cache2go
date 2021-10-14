@@ -22,11 +22,15 @@ type CacheTable struct {
 	name string
 	// All cached items.
 	items map[interface{}]*CacheItem
+	
+	// Exp depends create_time
+	isExpCreatedTime bool
 
 	// Timer responsible for triggering cleanup.
 	cleanupTimer *time.Timer
 	// Current timer duration.
 	cleanupInterval time.Duration
+	
 
 	// The logger used for this table.
 	logger *log.Logger
@@ -143,6 +147,9 @@ func (table *CacheTable) expirationCheck() {
 		item.RLock()
 		lifeSpan := item.lifeSpan
 		accessedOn := item.accessedOn
+		if table.isExpCreatedTime {
+			accessedOn = item.createdOn
+		}
 		item.RUnlock()
 
 		if lifeSpan == 0 {
